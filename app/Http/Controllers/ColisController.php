@@ -30,17 +30,16 @@ class ColisController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'expediteur|required|string|max:255',
             'destinataire|required|string|max:255',
             'ville_depart|required|string|',
             'ville_arrivee|required|string',
             'poids|required|numeric|min:0.1',
         ]);
+                Colis::create($validated);
 
-       $request->user()->colis()->create($request->save()->all());
-
-        return redirect()->route('colis.index');
+        return redirect()->route('colis.index')->with('success', 'Colis enregistré avec succès');
     }
 
     /**
