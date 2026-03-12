@@ -4,21 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\Colis;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class ColisController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Liste tous les colis de l'utilisateur connecté.
      */
     public function index()
     {
-         $colis = Auth::user()?->colis ?? collect();
+      $colis = Colis::where('user_id', auth()->id())->latest()->get();
+
         return view('colis.index', compact('colis'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Affiche le formulaire de création d'un colis.
      */
     public function create()
     {
@@ -26,76 +26,76 @@ class ColisController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Enregistre un nouveau colis en base.
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'expediteur|required|string|max:255',
-            'destinataire|required|string|max:255',
-            'ville_depart|required|string|',
-            'ville_arrivee|required|string',
-            'poids|required|numeric|min:0.1',
+            'expediteur'   => 'required|string|max:255',
+            'destinataire' => 'required|string|max:255',
+            'ville_depart' => 'required|string|max:255',
+            'ville_arrivee'=> 'required|string|max:255',
+            'poids'        => 'required|numeric|min:0',
         ]);
-                Colis::create($validated);
 
-        return redirect()->route('colis.index')->with('success', 'Colis enregistré avec succès');
+        // Statut par défaut + utilisateur connecté
+        $validated['statut']  = 'en_attente';
+        $validated['user_id'] = auth()->id();
+
+        Colis::create($validated);
+
+        return redirect()
+            ->route('colis.index')
+            ->with('success', 'Colis enregistré avec succès !');
     }
 
     /**
-     * Display the specified resource.
+     * Affiche les détails d'un colis spécifique.
      */
-    public function show(string $id)
+    public function show(Colis $colis)
     {
-        //
+        abort_if($colis->user_id !== auth()->id(), 403);
+    return view('colis.show', compact('colis'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Affiche le formulaire de modification d'un colis.
      */
     public function edit(Colis $colis)
     {
-        if ($colis->user_id !== auth()->id()) {
-        abort(403);
-    }
-
-    return view('colis.edit', compact('colis'));
+        return view('colis.edit', compact('colis'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Met à jour un colis en base.
      */
     public function update(Request $request, Colis $colis)
     {
-         if ($colis->user_id !== auth()->id()) {
-        abort(403);
-    }
+        $validated = $request->validate([
+            'expediteur'   => 'required|string|max:255',
+            'destinataire' => 'required|string|max:255',
+            'ville_depart' => 'required|string|max:255',
+            'ville_arrivee'=> 'required|string|max:255',
+            'poids'        => 'required|numeric|min:0',
+            'statut'       => 'required|in:en_attente,en_transit,livre,retourne',
+        ]);
 
-    $request->validate([
-        'expediteur' => 'required|string|max:255',
-        'destinataire' => 'required|string|max:255',
-        'ville_depart' => 'required|string',
-        'ville_arrivee' => 'required|string',
-        'poids' => 'required|numeric|min:0.1',
-    ]);
+        $colis->update($validated);
 
-    // Mise à jour simple
-    $colis->update($request->all());
-
-    return redirect()->route('colis.index');
+        return redirect()
+            ->route('colis.show', $colis)
+            ->with('success', 'Colis mis à jour avec succès !');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Supprime un colis.
      */
     public function destroy(Colis $colis)
     {
-         if ($colis->user_id !== auth()->id()) {
-        abort(403);
-    }
+        $colis->delete();
 
-    $colis->delete();
-
-    return redirect()->route('colis.index');
+        return redirect()
+            ->route('colis.index')
+            ->with('success', 'Colis supprimé.');
     }
 }

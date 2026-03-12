@@ -2,67 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Colis;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        return view('home');
-    }
+        $userId = auth()->id();
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+        $totalColis      = Colis::where('user_id', $userId)->count();
+        $colisEnTransit  = Colis::where('user_id', $userId)->where('statut', 'en_transit')->count();
+        $colisLivres     = Colis::where('user_id', $userId)->where('statut', 'livre')->count();
+        $colisEnAttente  = Colis::where('user_id', $userId)->where('statut', 'en_attente')->count();
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        // 5 derniers colis pour le tableau du dashboard
+        $recentColis = Colis::where('user_id', $userId)->latest()->take(5)->get();
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
-
-    public function about(){
-        return view('about');
+        return view('home', compact(
+            'totalColis',
+            'colisEnTransit',
+            'colisLivres',
+            'colisEnAttente',
+            'recentColis'
+        ));
     }
 }
