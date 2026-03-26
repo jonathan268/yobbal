@@ -1,59 +1,235 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📦 Yobbal — Plateforme de suivi de colis
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Application web fullstack de gestion et de suivi de colis, développée pour le marché camerounais. Construite avec **Laravel 12**, **Blade** et **Tailwind CSS**, elle permet aux utilisateurs d'enregistrer leurs envois et de les suivre via un numéro de référence unique.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Stack technique
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+| Technologie | Usage |
+|---|---|
+| Laravel 12 | Framework PHP backend + routing + ORM |
+| Blade | Templating côté serveur |
+| Tailwind CSS v3 | Styles UI |
+| Alpine.js | Interactivité légère côté client |
+| Vite | Bundler assets frontend |
+| MySQL / SQLite | Base de données relationnelle |
+| Laravel Breeze | Authentification (login, register, reset) |
+| Docker + Nginx | Conteneurisation & déploiement |
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 📁 Structure du projet
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+```
+yobbal/
+├── app/
+│   ├── Http/Controllers/
+│   │   ├── ColisController.php      # CRUD des colis
+│   │   ├── TrackingController.php   # Suivi public par numéro
+│   │   ├── HomeController.php       # Dashboard
+│   │   └── ProfileController.php   # Profil utilisateur
+│   └── Models/
+│       ├── Colis.php                # Modèle colis
+│       └── User.php                 # Modèle utilisateur
+├── database/
+│   ├── migrations/                  # Tables users, colis, cache, jobs
+│   └── seeders/
+├── resources/
+│   └── views/
+│       ├── colis/                   # Vues CRUD colis
+│       ├── tracking/                # Vue de suivi public
+│       ├── layouts/                 # Layouts principaux
+│       └── welcome.blade.php        # Page d'accueil
+├── routes/
+│   ├── web.php                      # Routes principales
+│   └── auth.php                     # Routes d'authentification
+├── Dockerfile                       # Image Docker (nginx-php-fpm)
+└── vite.config.js
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## ⚙️ Installation
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Prérequis
 
-### Premium Partners
+- PHP >= 8.2
+- Composer
+- Node.js >= 18
+- MySQL ou SQLite
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Cloner et installer
 
-## Contributing
+```bash
+git clone https://github.com/jonathan268/yobbal.git
+cd yobbal
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Installation automatique (script setup)
 
-## Code of Conduct
+```bash
+composer run setup
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Ce script exécute automatiquement :
+1. `composer install`
+2. Copie `.env.example` → `.env`
+3. Génère la clé applicative (`APP_KEY`)
+4. Lance les migrations (`php artisan migrate`)
+5. `npm install` + `npm run build`
 
-## Security Vulnerabilities
+### Variables d'environnement
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Modifier le fichier `.env` généré :
 
-## License
+```env
+APP_NAME=Yobbal
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=yobbal
+DB_USERNAME=root
+DB_PASSWORD=
+
+MAIL_MAILER=smtp
+MAIL_HOST=mailpit
+MAIL_PORT=1025
+```
+
+### Lancer en développement
+
+```bash
+composer run dev
+```
+
+Lance en parallèle : serveur PHP, queue worker, logs Pail et Vite.
+
+---
+
+## 📖 Fonctionnalités
+
+### 🌐 Suivi public (sans connexion)
+
+N'importe qui peut suivre un colis sans créer de compte.
+
+```
+GET /track?n=YBL-000001
+```
+
+Le numéro de suivi suit le format `YBL-{ID}` (ex : `YBL-000042`).
+
+---
+
+### 🔐 Espace utilisateur (connecté)
+
+| Page | URL | Description |
+|---|---|---|
+| Accueil / Dashboard | `/accueil` | Vue d'ensemble |
+| Liste des colis | `/colis` | Mes colis en cours |
+| Nouveau colis | `/colis/create` | Enregistrer un envoi |
+| Détail colis | `/colis/{id}` | Voir un colis spécifique |
+| Modifier colis | `/colis/{id}/edit` | Mettre à jour les infos |
+| Supprimer colis | `/colis/{id}` (DELETE) | Supprimer un colis |
+| Profil | `/profile` | Modifier mon compte |
+
+---
+
+### 🔑 Authentification (Laravel Breeze)
+
+| Action | URL |
+|---|---|
+| Connexion | `/login` |
+| Inscription | `/register` |
+| Mot de passe oublié | `/forgot-password` |
+| Réinitialisation | `/reset-password/{token}` |
+| Vérification email | `/verify-email` |
+| Déconnexion | `POST /logout` |
+
+---
+
+## 🗄️ Modèle de données
+
+### Table `colis`
+
+| Champ | Type | Description |
+|---|---|---|
+| `id` | bigint (auto) | Clé primaire |
+| `user_id` | FK → users | Propriétaire du colis |
+| `expediteur` | string | Nom de l'expéditeur |
+| `destinataire` | string | Nom du destinataire |
+| `ville_depart` | string | Ville d'origine |
+| `ville_arrivee` | string | Ville de destination |
+| `poids` | float | Poids en kg |
+| `statut` | string | Statut du colis |
+| `created_at / updated_at` | timestamp | Dates |
+
+### Statuts possibles
+
+```
+en_attente → en_transit → livre
+                        ↘ retourne
+```
+
+### Table `users`
+
+| Champ | Type |
+|---|---|
+| `id` | bigint |
+| `name` | string |
+| `email` | string (unique) |
+| `password` | string (hashé) |
+| `email_verified_at` | timestamp |
+
+---
+
+## 🔒 Sécurité
+
+- Authentification native Laravel (sessions, CSRF)
+- Propriété vérifiée : un utilisateur ne peut voir que ses propres colis (`abort_if`)
+- Validation Blade côté serveur sur toutes les entrées
+- Hachage automatique des mots de passe (`bcrypt`)
+- Reset de mot de passe par email avec token signé
+
+---
+
+## 🐳 Déploiement Docker
+
+Un `Dockerfile` est inclus pour un déploiement en production avec **nginx + PHP-FPM** :
+
+```bash
+docker build -t yobbal .
+docker run -p 80:80 \
+  -e APP_ENV=production \
+  -e APP_DEBUG=false \
+  yobbal
+```
+
+Variables d'environnement Docker configurées par défaut :
+
+```
+APP_ENV=production
+APP_DEBUG=false
+LOG_CHANNEL=stderr
+WEBROOT=/var/www/html/public
+```
+
+---
+
+## 🧪 Tests
+
+```bash
+composer run test
+# ou
+php artisan test
+```
+
+---
+
+## 📄 Licence
+
+MIT © [jonathan268](https://github.com/jonathan268)
